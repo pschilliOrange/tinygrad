@@ -84,7 +84,7 @@ class TestLinearizer(unittest.TestCase):
   @unittest.skipUnless(Device.DEFAULT in tensor_cores, "No tensor cores for device")
   def test_tensor_cores(self):
     for tc in tensor_cores[Device.DEFAULT]:
-      print("tc.arch:", tc.arch, "os.uname().machine:", os.uname.machine)
+      print("tc.arch:", tc.arch, "os.uname().machine:", os.uname().machine)
       if tc.arch is not None and tc.arch != os.uname().machine: continue
       a, b = Tensor.rand(tc.dims[0], tc.dims[2], dtype=tc.dtype_in), Tensor.rand(tc.dims[2], tc.dims[1], dtype=tc.dtype_in)
       np_a, np_b = a.numpy(), b.numpy()
