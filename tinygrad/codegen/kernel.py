@@ -47,7 +47,7 @@ tensor_cores: Dict[str, List[TensorCore]] = {
     TensorCore(device="HIP", dims=[16,16,16], dtype_in=dtypes.half, dtype_out=dtypes.float, wmma_func="__builtin_amdgcn_wmma_f32_16x16x16_f16_w32", upcast_dim=1, threads=[(0,16),(1,2)], thread_local_sizes=[16,16,8], thread_local_aliases=[ [[0],[0],[-1],[1]], [[0],[1],[-1],[0]], [[0],[1],[0],[2,-1]] ]),  # noqa: E501
   ],
   "CUDA": [
-    TensorCore(device="CUDA", dims=[16,16,16], dtype_in=dtypes.half, dtype_out=dtypes.float, wmma_func ="nvcuda::wmma::fragment<nvcuda::wmma::accumulator, 16, 16, 16, float>", upcast_dim=1, threads=[(0,16),(1,2)], thread_local_sizes=[16,16,8], thread_local_aliases=[ [[0],[0],[-1],[1]], [[0],[1],[-1],[0]], [[0],[1],[0],[2,-1]] ]),
+    TensorCore(device="CUDA", dims=[16,16,16], dtype_in=dtypes.half, dtype_out=dtypes.float, wmma_func ="nvcuda::wmma::fragment<nvcuda::wmma::accumulator, 16, 16, 16, float8>", upcast_dim=1, threads=[(0,16),(1,2)], thread_local_sizes=[16,16,8], thread_local_aliases=[ [[0],[0],[-1],[1]], [[0],[1],[-1],[0]], [[0],[1],[0],[2,-1]] ]),
     TensorCore(device="CUDA", dims=[16,16,16], dtype_in=dtypes.half, dtype_out=dtypes.float, wmma_func="__cuda_wmma<float8, wmma_matrix8x8x8, float8>", upcast_dim=1, threads=[(0,16),(1,2)], thread_local_sizes=[16,16,8], thread_local_aliases=[ [[0],[0],[-1],[1]], [[0],[1],[-1],[0]], [[0],[1],[0],[2,-1]] ]),
     TensorCore(device="CUDA", dims=[16,16,16], dtype_in=dtypes.half, dtype_out=dtypes.half, wmma_func="__builtin2_cuda_wmma<float16, wmma_matrix16x16x16, float16>", upcast_dim=1, threads=[(0,16),(1,2)], thread_local_sizes=[16,16,8], thread_local_aliases=[ [[0],[0],[-1],[1]], [[0],[1],[-1],[0]], [[0],[1],[0],[2,-1]] ]),
   ]
