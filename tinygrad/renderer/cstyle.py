@@ -250,7 +250,7 @@ class CUDALanguage(CStyleLanguage):
       "i": lambda x: f"(blockIdx.{chr(120+x)}*blockDim.{chr(120+x)}+threadIdx.{chr(120+x)})"
   }
   code_for_op = {**CStyleLanguage().code_for_op, **code_for_op_half}
-  half_prekernel ="#include <cuda_fp16.h>\n"+"#include <cuda_bf16.h>\n"+"""
+  half_prekernel ="#include <cuda_fp16.h>\n"+"#include <cuda_bf16.h>\n"+"#include <mma.h>"+"""
     struct half4 { half x, y, z, w; };
     __device__ half4 make_half4(half x, half y, half z, half w) { half4 ret; ret.x = x; ret.y = y; ret.z = z; ret.w = w; return ret; }
   """
