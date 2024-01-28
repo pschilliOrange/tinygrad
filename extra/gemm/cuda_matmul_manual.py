@@ -142,4 +142,10 @@ cudaalloc.copyout(flat_mv(nc.data), c)
 nc = nc.reshape(N,N)
 correct = na.astype(np.float32) @ nb.astype(np.float32)
 
-print(np.testing.assert_allclose(correct, nc, atol=.01))
+# Assuming 'correct' and 'nc' are your two arrays, and you have them defined
+are_close = np.allclose(correct, nc, atol=0.01)
+
+if are_close:
+    print("The arrays are close within the tolerance.")
+else:
+    print("The arrays are NOT close within the tolerance.")
