@@ -17,6 +17,7 @@ if FLOAT16:
   nb = nb.astype(np.float16)
 
 device = CUDADevice("cuda:0")
+print(device)
 cudaalloc = CUDAAllocator(device)
 
 a = cudaalloc.alloc(N*N*2 if FLOAT16 else N*N*4)
