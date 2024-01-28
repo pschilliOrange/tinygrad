@@ -142,4 +142,4 @@ cudaalloc.copyout(flat_mv(nc.data), c)
 nc = nc.reshape(N,N)
 correct = na.astype(np.float32) @ nb.astype(np.float32)
 
-np.testing.assert_allclose(correct, nc, atol=.01)
+print(np.testing.assert_allclose(correct, nc, atol=.01))
