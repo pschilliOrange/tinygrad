@@ -72,7 +72,7 @@ extern "C" __global__ void wmma_example({'half' if FLOAT16 else 'float'} *a, {'h
     #pragma unroll
     for (int i = 0; i < {'0' if FLOAT16 else '4'}; i++) {{
       #pragma unroll
-      for (int t = 0; t < a_frag[i].num_elements; t++) {{ a_frag[i].x[t] =  __float_to_tf32(a_frag[i].x[t]); }}
+      for (int t = 0; t < a_frag[i].num_elements; t++) {{ a_frag[i].x[t] =  wmma::__float_to_tf32(a_frag[i].x[t]); }}
       #pragma unroll
       for (int t = 0; t < b_frag[i].num_elements; t++) {{ b_frag[i].x[t] =  wmma::__float_to_tf32(b_frag[i].x[t]); }}
     }}
