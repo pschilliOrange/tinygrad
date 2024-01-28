@@ -251,40 +251,28 @@ class CUDALanguage(CStyleLanguage):
   }
   code_for_op = {**CStyleLanguage().code_for_op, **code_for_op_half}
   half_prekernel ="#include <cuda_fp16.h>\n"+"#include <cuda_bf16.h>\n"+"#include <mma.h>"+"""
-struct __align__(16) float8 {{
-  float4 val1;
-  float4 val2;
-}};
-__device__ float8 make_float8(float a1, float a2, float a3, float a4, float b1, float b2, float b3, float b4) {{
-  float8 result;
-  result.val1 = make_float4(a1, a2, a3, a4);
-  result.val2 = make_float4(b1, b2, b3, b4);
-  return result;
-}}
-struct half4 {{
-  half x, y, z, w;
-}};
-__device__ half4 make_half4(half x, half y, half z, half w) {{
-  half4 result;
-  result.x = x;
-  result.y = y;
-  result.z = z;
-  result.w = w;
-  return result;
-}}
-struct __align__(16) half8 {{
-  half4 val1;
-  half4 val2;
-}};
-__device__ half8 make_half8(half a1, half a2, half a3, half a4, half b1, half b2, half b3, half b4) {{
-  half8 result;
-  result.val1 = make_half4(a1, a2, a3, a4);
-  result.val2 = make_half4(b1, b2, b3, b4);
-  return result;
-}}
-struct half4 { half x, y, z, w; };
-__device__ half4 make_half4(half x, half y, half z, half w) { half4 ret; ret.x = x; ret.y = y; ret.z = z; ret.w = w; return ret; }
-  """
+    typedef union {
+      struct __align__(8) half4 {
+        half x, y, z, w;
+      };
+      half data[4];
+    } half4;
+    __device__ half4 make_half4(half x, half y, half z, half w) { return {x, y, z, w}; }
+    typedef union {
+      struct __align__(16) half8 {
+        half x, y, z, w, a, b, c, d;
+      };
+      half data[8];
+    } half8;
+    __device__ half8 make_half8(half x, half y, half z, half w, half a, half b, half c, half d) { return {x, y, z, w, a, b, c, d}; };
+    typedef union {
+      struct __align__(16) float8 {
+        float x, y, z, w, a, b, c, d;
+      };
+      float data[8];
+    } float8;
+    __device__ float8 make_float8(float x, float y, float z, float w, float a, float b, float c, float d) { return {x, y, z, w, a, b, c, d}; };
+    """
   type_map = {dtypes.bfloat16: "nv_bfloat16"}
 CUDARenderer = functools.partial(uops_to_cstyle, CUDALanguage())
 
