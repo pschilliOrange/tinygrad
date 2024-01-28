@@ -144,7 +144,7 @@ correct = na.astype(np.float32) @ nb.astype(np.float32)
 
 # Assuming 'correct' and 'nc' are your two arrays, and you have them defined
 are_close = np.allclose(correct, nc, atol=0.01)
-
+print(are_close)
 if are_close:
     print("The arrays are close within the tolerance.")
 else:
