@@ -83,6 +83,7 @@ class TestLinearizer(unittest.TestCase):
 
   @unittest.skipUnless(Device.DEFAULT in tensor_cores, "No tensor cores for device")
   def test_tensor_cores(self):
+    print(tensor_cores[Device.DEFAULT])
     for tc in tensor_cores[Device.DEFAULT]:
       print("tc.arch:", tc.arch, "os.uname().machine:", os.uname().machine)
       if tc.arch is not None and tc.arch != os.uname().machine: continue
