@@ -324,6 +324,7 @@ class Linearizer(Kernel):
               for z in range(wmma_sz[2]):
                 acc[i+z] = self.uop(UOps.PHI, tc.dtype_out, (op3[z], self.uop(UOps.GEP, tc.dtype_out, (ret,), z)) + loop_ctx)
             i += wmma_sz[2]
+        print("self.uop", self.uop)
       else:
         if locals_to_store:
           self.uop(UOps.BARRIER, None, (), cachable=False)
