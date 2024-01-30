@@ -307,6 +307,7 @@ class Linearizer(Kernel):
 
       # copy in any global buffers
       if (tc:=self.tensor_core):
+        print('locals_to_store', locals_to_store)
         wmma_sz = tc.thread_local_sizes
         # calculate the number of local accumulator reduces and render WMMAs: this is bad... this needs to come from someplace else
         nx, ny, nacc = (len(locals_to_store[0][2])//wmma_sz[0]), (len(locals_to_store[1][2])//wmma_sz[1]), (len(acc)//wmma_sz[2])
