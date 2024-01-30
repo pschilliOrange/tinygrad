@@ -321,11 +321,14 @@ class Linearizer(Kernel):
               ops = (self.uop(UOps.CAST, tc.dtype_in.vec(wmma_sz[0]), tuple(locals_to_store[0][2][(x+(j*bx))*wmma_sz[0]:(x+(j*bx)+1)*wmma_sz[0]])),
                      self.uop(UOps.CAST, tc.dtype_in.vec(wmma_sz[1]), tuple(locals_to_store[1][2][(y+(j*by))*wmma_sz[1]:(y+(j*by)+1)*wmma_sz[1]])),
                      self.uop(UOps.CAST, tc.dtype_out.vec(wmma_sz[2]), tuple(op3:=acc[i:i+wmma_sz[2]])))
+              print("ops", ops)
               ret = self.uop(UOps.WMMA, tc.dtype_out.vec(wmma_sz[2]), ops, tc.wmma_func)
+              print('ret', ret)
               for z in range(wmma_sz[2]):
                 acc[i+z] = self.uop(UOps.PHI, tc.dtype_out, (op3[z], self.uop(UOps.GEP, tc.dtype_out, (ret,), z)) + loop_ctx)
             i += wmma_sz[2]
         print("self.uop", self.uop)
+        print('acc', acc)
       else:
         if locals_to_store:
           self.uop(UOps.BARRIER, None, (), cachable=False)
