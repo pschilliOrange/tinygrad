@@ -88,9 +88,11 @@ class TestLinearizer(unittest.TestCase):
       print("tc.arch:", tc.arch, "os.uname().machine:", os.uname().machine)
       if tc.arch is not None and tc.arch != os.uname().machine: continue
       a, b = Tensor.rand(tc.dims[0], tc.dims[2], dtype=tc.dtype_in), Tensor.rand(tc.dims[2], tc.dims[1], dtype=tc.dtype_in)
+      print(a.numpy)
+      print(b.numpy)
       np_a, np_b = a.numpy(), b.numpy()
       r = a.matmul(b, acc_dtype=tc.dtype_out)
-      print(r)
+      print(r.numpy)
       realized_ast, _ = helper_realized_ast(r)
       k = Linearizer(realized_ast)
       k.apply_tensor_cores(1)
