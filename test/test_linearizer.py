@@ -90,6 +90,7 @@ class TestLinearizer(unittest.TestCase):
       a, b = Tensor.rand(tc.dims[0], tc.dims[2], dtype=tc.dtype_in), Tensor.rand(tc.dims[2], tc.dims[1], dtype=tc.dtype_in)
       np_a, np_b = a.numpy(), b.numpy()
       r = a.matmul(b, acc_dtype=tc.dtype_out)
+      print(r)
       realized_ast, _ = helper_realized_ast(r)
       k = Linearizer(realized_ast)
       k.apply_tensor_cores(1)
