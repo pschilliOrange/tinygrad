@@ -103,107 +103,218 @@ def uops_to_cstyle(lang:CStyleLanguage, function_name:str, uops:List[UOp]) -> st
   print('function_name', function_name)
   print('uops', uops)
   if isinstance(lang, CUDALanguage):
-    print('Put CCode here')
-  local_size: List[int] = []
-  kernel,prekernel,bufs = [],[],[]
-  #pend_close = None
-  depth = 1
-  def kk(s): kernel.append("  "*depth+s)
+    code = f"""#include <cuda_fp16.h>
+    #include <mma.h>
+    using namespace nvcuda;
+    struct __align__(8) half4 {{
+      half2 x, y;
+      __device__ __forceinline__ explicit half4(const float4& a): x(make_half2(__float2half(a.x), __float2half(a.y))), y(make_half2(__float2half(a.z),__float2half(a.w))) {{}}
+      __device__ __forceinline__ explicit operator float4() const {{return make_float4(__half2float(x.x), __half2float(x.y), __half2float(y.x), __half2float(y.y)); }}
+    }};
+    
+__global__ void r_2_16_16_8n1(float* data0, const half* data1, const half* data2) {{
+  int lidx0 = threadIdx.y; /* 2 */
+  int lidx1 = threadIdx.x; /* 16 */
+  float acc0 = 0.0f;
+  float acc1 = 0.0f;
+  float acc2 = 0.0f;
+  float acc3 = 0.0f;
+  float acc4 = 0.0f;
+  float acc5 = 0.0f;
+  float acc6 = 0.0f;
+  float acc7 = 0.0f;
+  __syncthreads();
+  float val0 = (float)(data1[lidx1*16]);
+  float val1 = (float)(data1[(lidx1*16)+1]);
+  float val2 = (float)(data1[(lidx1*16)+2]);
+  float val3 = (float)(data1[(lidx1*16)+3]);
+  float val4 = (float)(data1[(lidx1*16)+4]);
+  float val5 = (float)(data1[(lidx1*16)+5]);
+  float val6 = (float)(data1[(lidx1*16)+6]);
+  float val7 = (float)(data1[(lidx1*16)+7]);
+  float val8 = (float)(data1[(lidx1*16)+8]);
+  float val9 = (float)(data1[(lidx1*16)+9]);
+  float val10 = (float)(data1[(lidx1*16)+10]);
+  float val11 = (float)(data1[(lidx1*16)+11]);
+  float val12 = (float)(data1[(lidx1*16)+12]);
+  float val13 = (float)(data1[(lidx1*16)+13]);
+  float val14 = (float)(data1[(lidx1*16)+14]);
+  float val15 = (float)(data1[(lidx1*16)+15]);
+  float val16 = (float)(data2[lidx1]);
+  float val17 = (float)(data2[lidx1+16]);
+  float val18 = (float)(data2[lidx1+32]);
+  float val19 = (float)(data2[lidx1+48]);
+  float val20 = (float)(data2[lidx1+64]);
+  float val21 = (float)(data2[lidx1+80]);
+  float val22 = (float)(data2[lidx1+96]);
+  float val23 = (float)(data2[lidx1+112]);
+  float val24 = (float)(data2[lidx1+128]);
+  float val25 = (float)(data2[lidx1+144]);
+  float val26 = (float)(data2[lidx1+160]);
+  float val27 = (float)(data2[lidx1+176]);
+  float val28 = (float)(data2[lidx1+192]);
+  float val29 = (float)(data2[lidx1+208]);
+  float val30 = (float)(data2[lidx1+224]);
+  float val31 = (float)(data2[lidx1+240]);
+  {{
+  nvcuda::wmma::fragment<nvcuda::wmma::matrix_a, 16, 16, 16, half, nvcuda::wmma::row_major> a_frag;
+  nvcuda::wmma::fragment<nvcuda::wmma::matrix_b, 16, 16, 16, half, nvcuda::wmma::col_major> b_frag;
+  nvcuda::wmma::fragment<nvcuda::wmma::accumulator, 16, 16, 16, float> c_frag;
+  nvcuda::wmma::fill_fragment(c_frag, 0.0f);
+  a_frag.x[0] = val0;
+  a_frag.x[1] = val1;
+  a_frag.x[2] = val2;
+  a_frag.x[3] = val3;
+  a_frag.x[4] = val4;
+  a_frag.x[5] = val5;
+  a_frag.x[6] = val6;
+  a_frag.x[7] = val7;
+  a_frag.x[8] = val8;
+  a_frag.x[9] = val9;
+  a_frag.x[10] = val10;
+  a_frag.x[11] = val11;
+  a_frag.x[12] = val12;
+  a_frag.x[13] = val13;
+  a_frag.x[14] = val14;
+  a_frag.x[15] = val15;
+  b_frag.x[0] = val16;
+  b_frag.x[1] = val17;
+  b_frag.x[2] = val18;
+  b_frag.x[3] = val19;
+  b_frag.x[4] = val20;
+  b_frag.x[5] = val21;
+  b_frag.x[6] = val22;
+  b_frag.x[7] = val23;
+  b_frag.x[8] = val24;
+  b_frag.x[9] = val25;
+  b_frag.x[10] = val26;
+  b_frag.x[11] = val27;
+  b_frag.x[12] = val28;
+  b_frag.x[13] = val29;
+  b_frag.x[14] = val30;
+  b_frag.x[15] = val31;
+  nvcuda::wmma::mma_sync(c_frag, a_frag, b_frag, c_frag);
+  acc0 = c_frag.x[0];
+  acc1 = c_frag.x[1];
+  acc2 = c_frag.x[2];
+  acc3 = c_frag.x[3];
+  acc4 = c_frag.x[4];
+  acc5 = c_frag.x[5];
+  acc6 = c_frag.x[6];
+  acc7 = c_frag.x[7];
+  }}
+  data0[lidx1+(lidx0*16)] = acc0;
+  data0[lidx1+(lidx0*16)+32] = acc1;
+  data0[lidx1+(lidx0*16)+64] = acc2;
+  data0[lidx1+(lidx0*16)+96] = acc3;
+  data0[lidx1+(lidx0*16)+128] = acc4;
+  data0[lidx1+(lidx0*16)+160] = acc5;
+  data0[lidx1+(lidx0*16)+192] = acc6;
+  data0[lidx1+(lidx0*16)+224] = acc7;
+}}"""
+    return code
+  else:
 
-  c: DefaultDict[str, int] = defaultdict(int)
-  r: Dict[UOp, str] = {}
-  def ssa(u, prefix="t"):
-    nonlocal c, r
-    ret = f"{prefix}{c[prefix]}"
-    if u is not None: r[u] = ret
-    c[prefix] += 1
-    return ret
+    local_size: List[int] = []
+    kernel,prekernel,bufs = [],[],[]
+    #pend_close = None
+    depth = 1
+    def kk(s): kernel.append("  "*depth+s)
 
-  child_count = Counter(v for ru in uops for v in ru.vin)
+    c: DefaultDict[str, int] = defaultdict(int)
+    r: Dict[UOp, str] = {}
+    def ssa(u, prefix="t"):
+      nonlocal c, r
+      ret = f"{prefix}{c[prefix]}"
+      if u is not None: r[u] = ret
+      c[prefix] += 1
+      return ret
 
-  for u in uops:
-    uop,dtype,vin,args = u.uop,u.dtype,u.vin,u.arg
-    # these four uops don't have output dtypes
-    if uop == UOps.IF:
-      kk(lang.render_if(r[vin[0]]))
-      depth += 1
-    elif uop == UOps.BARRIER:
-      kk(lang.barrier)
-    elif uop == UOps.END:
-      depth -= 1
-      kk("}")
-    elif uop == UOps.STORE:
-      assert vin[0].dtype is not None and vin[2].dtype is not None
-      if len(vin) > 3: kk(lang.render_if(r[vin[3]]))
-      kk(lang.render_store(r[vin[0]], vin[0].dtype, r[vin[2]], vin[2].dtype, strip_parens(r[vin[1]]), vin[0].uop == UOps.DEFINE_LOCAL))
-      if len(vin) > 3: kk("}")
-    else:
-      assert dtype is not None, f"None dtype for uop {uop}"
-      if uop == UOps.LOOP:
-        kk(lang.render_for(ssa(u,'ridx'), r[vin[0]], r[vin[1]]))
+    child_count = Counter(v for ru in uops for v in ru.vin)
+
+    for u in uops:
+      uop,dtype,vin,args = u.uop,u.dtype,u.vin,u.arg
+      # these four uops don't have output dtypes
+      if uop == UOps.IF:
+        kk(lang.render_if(r[vin[0]]))
         depth += 1
-      elif uop == UOps.WMMA:
-        kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u, 'wmma')} = {args}({r[vin[0]]}, {r[vin[1]]}, {r[vin[2]]});")  # noqa: E501
-      elif uop == UOps.ALU:
-        # remove parens if ALU types are the same. TODO: can do more here
-        if vin[0].uop == UOps.ALU and vin[0].arg == args and args in {BinaryOps.ADD, BinaryOps.SUB, BinaryOps.MUL, BinaryOps.XOR}:
-          val = lang.code_for_op[args](strip_parens(r[vin[0]]), *[r[x] for x in vin[1:]], dtype)
-        else:
-          val = lang.code_for_op[args](*[r[x] for x in vin] + [dtype])
-        assert child_count[u] != 0, f"childless ALU op found {u}"
-        # TODO: fix index rendering issue. fix clang nested max macro issue
-        if child_count[u] <= 1 and args != BinaryOps.MAX and not getenv("EXPAND_SSA"):
-          r[u] = val
-        else:
-          kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'alu')} = {val};")
-      elif uop == UOps.DEFINE_ACC:
-        kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'acc')} = {lang.render_const(args, dtype)};")
-        #print(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'acc')} = {lang.render_const(args, dtype)};")
-      elif uop == UOps.SPECIAL:
-        kk(f"{lang.size_prefix} {args[1]} = {lang.code_for_workitem[args[1][0]](args[0])}; /* {args[2]} */")
-        if args[1].startswith("l"): local_size.append(args[2])
-        r[u] = args[1]
-      elif uop == UOps.CONST:
-        r[u] = lang.render_const(args, dtype) if args >= 0 else f"({lang.render_const(args, dtype)})"
-      elif uop == UOps.LOAD:
-        val = lang.render_load(dtype, r[vin[0]], vin[0].dtype, strip_parens(r[vin[1]]), vin[0].uop == UOps.DEFINE_LOCAL)
-        # NOTE: this relies on the load not happening if it's in the unselected branch
-        if len(vin) > 3: val = lang.code_for_op[TernaryOps.WHERE](r[vin[2]], val, r[vin[3]], dtype)
-        kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else lang.render_dtype(dtype)} {ssa(u,'val')} = {val};")
-      elif uop == UOps.PHI:
-        kk(f"{r[vin[0]]} = {r[vin[1]]};")
-        r[u] = r[vin[0]]
-      elif uop == UOps.CAST:
-        if isinstance(args, tuple) and args[1]:  # bitcast
-          assert len(vin) == 1
-          precast = ssa(None,'precast')
-          kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else lang.render_dtype(cast(DType, vin[0].dtype))} {precast} = {r[vin[0]]};")
-          val = lang.render_cast([precast], dtype, bitcast=True)
-        else:
-          val = lang.render_cast([r[x] for x in vin], dtype, bitcast=False)
-        if child_count[u] <= 1: r[u] = val
-        else: kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'cast')} = {val};")
-        #print((f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'cast')} = {val};"))
-      elif uop == UOps.DEFINE_LOCAL:
-        if lang.external_local_bufs:
-          prekernel.append(lang.render_local(args[0], dtype, args[1]))
-        else:
-          kk(lang.render_local(args[0], dtype, args[1]))
-        r[u] = args[0]
-      elif uop == UOps.DEFINE_GLOBAL:
-        bufs.append((args, dtype))
-        r[u] = args
-      elif uop == UOps.GEP:
-        if cast(DType, vin[0].dtype).sz > 4:
-          r[u] = f"({r[vin[0]]})[{args}]"  # this is correct for HIP
-        else:
-          r[u] = f"({r[vin[0]]}).{'xyzw'[args]}"
+      elif uop == UOps.BARRIER:
+        kk(lang.barrier)
+      elif uop == UOps.END:
+        depth -= 1
+        kk("}")
+      elif uop == UOps.STORE:
+        assert vin[0].dtype is not None and vin[2].dtype is not None
+        if len(vin) > 3: kk(lang.render_if(r[vin[3]]))
+        kk(lang.render_store(r[vin[0]], vin[0].dtype, r[vin[2]], vin[2].dtype, strip_parens(r[vin[1]]), vin[0].uop == UOps.DEFINE_LOCAL))
+        if len(vin) > 3: kk("}")
       else:
-        raise RuntimeError(f"failed to render {uop}")
-  print('What is returned')
-  print(type(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel)))
-  print(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel))
-  return lang.render_kernel(function_name, kernel, bufs, local_size, prekernel)
+        assert dtype is not None, f"None dtype for uop {uop}"
+        if uop == UOps.LOOP:
+          kk(lang.render_for(ssa(u,'ridx'), r[vin[0]], r[vin[1]]))
+          depth += 1
+        elif uop == UOps.WMMA:
+          kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u, 'wmma')} = {args}({r[vin[0]]}, {r[vin[1]]}, {r[vin[2]]});")  # noqa: E501
+        elif uop == UOps.ALU:
+          # remove parens if ALU types are the same. TODO: can do more here
+          if vin[0].uop == UOps.ALU and vin[0].arg == args and args in {BinaryOps.ADD, BinaryOps.SUB, BinaryOps.MUL, BinaryOps.XOR}:
+            val = lang.code_for_op[args](strip_parens(r[vin[0]]), *[r[x] for x in vin[1:]], dtype)
+          else:
+            val = lang.code_for_op[args](*[r[x] for x in vin] + [dtype])
+          assert child_count[u] != 0, f"childless ALU op found {u}"
+          # TODO: fix index rendering issue. fix clang nested max macro issue
+          if child_count[u] <= 1 and args != BinaryOps.MAX and not getenv("EXPAND_SSA"):
+            r[u] = val
+          else:
+            kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'alu')} = {val};")
+        elif uop == UOps.DEFINE_ACC:
+          kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'acc')} = {lang.render_const(args, dtype)};")
+          #print(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'acc')} = {lang.render_const(args, dtype)};")
+        elif uop == UOps.SPECIAL:
+          kk(f"{lang.size_prefix} {args[1]} = {lang.code_for_workitem[args[1][0]](args[0])}; /* {args[2]} */")
+          if args[1].startswith("l"): local_size.append(args[2])
+          r[u] = args[1]
+        elif uop == UOps.CONST:
+          r[u] = lang.render_const(args, dtype) if args >= 0 else f"({lang.render_const(args, dtype)})"
+        elif uop == UOps.LOAD:
+          val = lang.render_load(dtype, r[vin[0]], vin[0].dtype, strip_parens(r[vin[1]]), vin[0].uop == UOps.DEFINE_LOCAL)
+          # NOTE: this relies on the load not happening if it's in the unselected branch
+          if len(vin) > 3: val = lang.code_for_op[TernaryOps.WHERE](r[vin[2]], val, r[vin[3]], dtype)
+          kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else lang.render_dtype(dtype)} {ssa(u,'val')} = {val};")
+        elif uop == UOps.PHI:
+          kk(f"{r[vin[0]]} = {r[vin[1]]};")
+          r[u] = r[vin[0]]
+        elif uop == UOps.CAST:
+          if isinstance(args, tuple) and args[1]:  # bitcast
+            assert len(vin) == 1
+            precast = ssa(None,'precast')
+            kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else lang.render_dtype(cast(DType, vin[0].dtype))} {precast} = {r[vin[0]]};")
+            val = lang.render_cast([precast], dtype, bitcast=True)
+          else:
+            val = lang.render_cast([r[x] for x in vin], dtype, bitcast=False)
+          if child_count[u] <= 1: r[u] = val
+          else: kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'cast')} = {val};")
+          #print((f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'cast')} = {val};"))
+        elif uop == UOps.DEFINE_LOCAL:
+          if lang.external_local_bufs:
+            prekernel.append(lang.render_local(args[0], dtype, args[1]))
+          else:
+            kk(lang.render_local(args[0], dtype, args[1]))
+          r[u] = args[0]
+        elif uop == UOps.DEFINE_GLOBAL:
+          bufs.append((args, dtype))
+          r[u] = args
+        elif uop == UOps.GEP:
+          if cast(DType, vin[0].dtype).sz > 4:
+            r[u] = f"({r[vin[0]]})[{args}]"  # this is correct for HIP
+          else:
+            r[u] = f"({r[vin[0]]}).{'xyzw'[args]}"
+        else:
+          raise RuntimeError(f"failed to render {uop}")
+    # print('What is returned')
+    # print(type(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel)))
+    # print(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel))
+    return lang.render_kernel(function_name, kernel, bufs, local_size, prekernel)
 
 class OpenCLLanguage(CStyleLanguage):
   kernel_prefix = "__kernel "
