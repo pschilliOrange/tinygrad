@@ -233,6 +233,7 @@ __global__ void r_2_16_16_8n1(float* data0, const half* data1, const half* data2
     child_count = Counter(v for ru in uops for v in ru.vin)
 
     for u in uops:
+      before = kernel
       uop,dtype,vin,args = u.uop,u.dtype,u.vin,u.arg
       # these four uops don't have output dtypes
       if uop == UOps.IF:
@@ -412,6 +413,8 @@ __global__ void r_2_16_16_8n1(float* data0, const half* data1, const half* data2
             r[u] = f"({r[vin[0]]}).{'xyzw'[args]}"
         else:
           raise RuntimeError(f"failed to render {uop}")
+        print(uop)
+        print(kernel[(len(before)-len(kernel)):])
     # print('What is returned')
     # print(type(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel)))
     # print(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel))
