@@ -200,7 +200,9 @@ def uops_to_cstyle(lang:CStyleLanguage, function_name:str, uops:List[UOp]) -> st
           r[u] = f"({r[vin[0]]}).{'xyzw'[args]}"
       else:
         raise RuntimeError(f"failed to render {uop}")
-
+  print('What is returned')
+  print(type(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel)))
+  print(lang.render_kernel(function_name, kernel, bufs, local_size, prekernel))
   return lang.render_kernel(function_name, kernel, bufs, local_size, prekernel)
 
 class OpenCLLanguage(CStyleLanguage):
