@@ -99,7 +99,9 @@ class CStyleLanguage(NamedTuple):
   def render_dtype(self, var_dtype:DType) -> str: return self.type_map[var_dtype] if var_dtype in self.type_map else var_dtype.name
 
 def uops_to_cstyle(lang:CStyleLanguage, function_name:str, uops:List[UOp]) -> str:
-  print(lang, function_name, uops)
+  print('lang', lang)
+  print('function_name', function_name)
+  print('uops', uops)
   local_size: List[int] = []
   kernel,prekernel,bufs = [],[],[]
   #pend_close = None
