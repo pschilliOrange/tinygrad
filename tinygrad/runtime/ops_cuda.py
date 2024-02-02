@@ -46,6 +46,7 @@ class CUDAProgram:
     if not CUDACPU:
       check(cuda.cuCtxSetCurrent(self.device.context))
       self.module = init_c_var(cuda.CUmodule(), lambda x: check(cuda.cuModuleLoadData(ctypes.byref(x), lib)))
+      prg = cuda.CUfunction()
       #check(cuda.cuModuleGetFunction(ctypes.byref(prg := cuda.CUfunction()), self.module, name.encode("utf-8")))
     self.prg = prg if not CUDACPU else lib
 
