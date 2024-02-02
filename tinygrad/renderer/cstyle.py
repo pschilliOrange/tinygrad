@@ -153,6 +153,7 @@ def uops_to_cstyle(lang:CStyleLanguage, function_name:str, uops:List[UOp]) -> st
           kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'alu')} = {val};")
       elif uop == UOps.DEFINE_ACC:
         kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'acc')} = {lang.render_const(args, dtype)};")
+        print(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'acc')} = {lang.render_const(args, dtype)};")
       elif uop == UOps.SPECIAL:
         kk(f"{lang.size_prefix} {args[1]} = {lang.code_for_workitem[args[1][0]](args[0])}; /* {args[2]} */")
         if args[1].startswith("l"): local_size.append(args[2])
@@ -177,6 +178,7 @@ def uops_to_cstyle(lang:CStyleLanguage, function_name:str, uops:List[UOp]) -> st
           val = lang.render_cast([r[x] for x in vin], dtype, bitcast=False)
         if child_count[u] <= 1: r[u] = val
         else: kk(f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'cast')} = {val};")
+        print((f"{lang.generic_var_prefix if lang.generic_var_prefix else dtype.name} {ssa(u,'cast')} = {val};"))
       elif uop == UOps.DEFINE_LOCAL:
         if lang.external_local_bufs:
           prekernel.append(lang.render_local(args[0], dtype, args[1]))
