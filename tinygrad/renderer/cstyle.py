@@ -102,7 +102,7 @@ def uops_to_cstyle(lang:CStyleLanguage, function_name:str, uops:List[UOp]) -> st
   print('lang', lang)
   print('function_name', function_name)
   print('uops', uops)
-  if lang isinstance(CUDALanguage):
+  if isinstance(lang, CUDALanguage):
     print('Put CCode here')
   local_size: List[int] = []
   kernel,prekernel,bufs = [],[],[]
