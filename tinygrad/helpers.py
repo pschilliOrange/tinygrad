@@ -206,7 +206,10 @@ def init_c_struct_t(fields: Tuple[Tuple[str, ctypes._SimpleCData], ...]):
   class CStruct(ctypes.Structure):
     _pack_, _fields_ = 1, fields
   return CStruct
-def init_c_var(ctypes_var, creat_cb): return (creat_cb(ctypes_var), ctypes_var)[1]
+def init_c_var(ctypes_var, creat_cb):
+  print('ctypes_var', ctypes_var)
+  print('create_cb', creat_cb) 
+  return (creat_cb(ctypes_var), ctypes_var)[1]
 def get_bytes(arg, get_sz, get_str, check) -> bytes: return (sz := init_c_var(ctypes.c_size_t(), lambda x: check(get_sz(arg, ctypes.byref(x)))), ctypes.string_at(init_c_var(ctypes.create_string_buffer(sz.value), lambda x: check(get_str(arg, x))), size=sz.value))[1]  # noqa: E501
 def flat_mv(mv:memoryview):
   if len(mv) == 0: return mv
