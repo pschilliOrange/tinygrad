@@ -98,6 +98,7 @@ class LazyBuffer:
       return create_lazybuffer(self.device, self.st, dtype, MetaOps.CONST, dtypes.as_const(self.base.arg, dtype))
     new_shape = self.shape
     if bitcast and self.dtype.itemsize != dtype.itemsize:
+      print(self.device)
       #if not self.device.startswith("DISK"): raise RuntimeError("shape changing bitcast only supported on DISK right now")
       if not all_int(new_shape): raise RuntimeError("shape changing bitcast with symbolic shape isn't supported yet")
       # https://pytorch.org/docs/stable/generated/torch.Tensor.view.html
